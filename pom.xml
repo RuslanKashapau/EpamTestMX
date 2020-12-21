@@ -1,0 +1,209 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>test</groupId>
+	<artifactId>EpamTest</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<properties>
+		<parallelTag>@PARALLEL</parallelTag>
+		<cucumberVersion>1.2.5</cucumberVersion>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20171018</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
+
+		<dependency>
+			<groupId>info.cukes</groupId>
+			<artifactId>cucumber-junit</artifactId>
+			<version>${cucumberVersion}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>info.cukes</groupId>
+			<artifactId>cucumber-java</artifactId>
+			<version>${cucumberVersion}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>info.cukes</groupId>
+			<artifactId>cucumber-core</artifactId>
+			<version>${cucumberVersion}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>info.cukes</groupId>
+			<artifactId>gherkin</artifactId>
+			<version>2.12.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.masterthought</groupId>
+			<artifactId>cucumber-reporting</artifactId>
+			<version>5.1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.12</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>3.3.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>json-schema-validator</artifactId>
+			<version>3.3.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.0</version>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<sourceDirectory>framework</sourceDirectory>
+		<plugins>
+			<plugin>
+				<groupId>com.github.temyers</groupId>
+				<artifactId>cucumber-jvm-parallel-plugin</artifactId>
+				<version>4.2.0</version>
+				<executions>
+					<execution>
+						<id>generateRunners</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>generateRunners</goal>
+						</goals>
+						<configuration>
+							<glue>
+								<package>com.epam.test.steps</package>
+							</glue>
+							<outputDirectory>${project.build.directory}/generated-test-sources</outputDirectory>
+							The directory, which must be in the root of the runtime
+							classpath, containing
+							your feature files.
+							<featuresDirectory>features</featuresDirectory>
+							Directory
+							where the cucumber report files shall be written
+							<cucumberOutputDir>${project.build.directory}/Reports/JSON</cucumberOutputDir>
+							comma separated list of output formats json,html,rerun.txt
+							<format>json</format>
+							CucumberOptions.strict property
+							<strict>true</strict>
+							CucumberOptions.monochrome
+							property
+							<monochrome>true</monochrome>
+							The tags to run, maps to CucumberOptions.tags
+							property you can
+							pass ANDed tags like "@tag1","@tag2" and ORed tags like
+							"@tag1,@tag2,@tag3"
+							<tags>
+								<tag>${parallelTag}</tag>
+							</tags>
+							If set to true,
+							only feature files containing the required tags
+							shall be generated.
+							<filterFeaturesByTags>false</filterFeaturesByTags>
+							Generate TestNG runners instead of default JUnit ones.
+							<useTestNG>false</useTestNG>
+							The naming scheme to use for the generated test classes. One of
+							'simple'
+							or 'feature-title'
+							<namingScheme>simple</namingScheme>
+							The class naming pattern
+							to use. Only required/used if naming
+							scheme is 'pattern'.
+							<namingPattern>Parallel{c}IT</namingPattern>
+							One of [SCENARIO, FEATURE]. SCENARIO generates one runner per
+							scenario. FEATURE
+							generates a runner per feature.
+							<parallelScheme>SCENARIO</parallelScheme>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19.1</version>
+				<configuration>
+					<testFailureIgnore>true</testFailureIgnore>
+					<forkCount>3</forkCount>
+					<reuseForks>false</reuseForks>
+					<reportsDirectory>${project.build.directory}/Reports/surefire</reportsDirectory>
+					<excludes>
+						<exclude>none</exclude>
+					</excludes>
+					<includes>
+						<!-- Include your Cucumber tests, as an example -->
+						<include>**/Parallel*IT.java</include>
+						<!--<include>**/TestRunner.java</include> -->
+					</includes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>acceptance-test</id>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.7.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+			</plugin>
+			<plugin>
+				<groupId>net.masterthought</groupId>
+				<artifactId>maven-cucumber-reporting</artifactId>
+				<version>2.8.0</version>
+				<executions>
+					<execution>
+						<id>execution</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<projectName>CucumberWebGui</projectName>
+							<outputDirectory>${project.build.directory}/Reports</outputDirectory>
+							<cucumberOutput>${project.build.directory}/Reports/JSON</cucumberOutput>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
